@@ -7,11 +7,23 @@ models:
       - name: customer_id
         tests: [unique, not_null]
       - name: email
+        description: Lowercased, trimmed email.
         tests: [not_null]
       - name: region
         tests:
           - accepted_values:
-              values: ['North', 'South', 'East', 'West', 'Central']
+              arguments:
+                values: ['North', 'South', 'East', 'West', 'Central']
+      - name: segment
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['consumer', 'small_business', 'enterprise']
+      - name: signup_date
+        tests: [not_null]
+      - name: updated_at
+        description: Source timestamp, kept as a timestamp for the snapshot strategy.
+        tests: [not_null]
   - name: stg_products
     description: Cleaned product catalog, one row per product, prices in dollars.
     columns:
@@ -19,6 +31,10 @@ models:
         tests: [unique, not_null]
       - name: unit_price
         description: Unit price in dollars; always at or above unit cost (checked by tests/assert_product_pricing.sql).
+        tests: [not_null]
+      - name: unit_cost
+        description: Unit cost in dollars.
+        tests: [not_null]
       - name: category
         tests: [not_null]
   - name: stg_orders
@@ -28,13 +44,27 @@ models:
         tests: [unique, not_null]
       - name: customer_id
         tests:
+          - not_null
           - relationships:
-              to: ref('stg_customers')
-              field: customer_id
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
       - name: status
+        description: Normalised status; see macros/order_status_label.sql.
         tests:
           - accepted_values:
-              values: ['completed', 'shipped', 'cancelled', 'refunded']
+              arguments:
+                values: ['completed', 'shipped', 'cancelled', 'refunded']
+      - name: channel
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['web', 'mobile', 'phone']
+      - name: order_date
+        tests: [not_null]
+      - name: discount_amount
+        description: Discount in dollars; never negative on clean data (checked by tests/assert_stg_orders_discount_non_negative.sql).
+        tests: [not_null]
   - name: stg_order_items
     description: Cleaned order line items, one row per line, prices in dollars.
     columns:
@@ -42,8 +72,21 @@ models:
         tests: [unique, not_null]
       - name: order_id
         tests:
+          - not_null
           - relationships:
-              to: ref('stg_orders')
-              field: order_id
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
       - name: quantity
         description: Line quantity; rows with quantity <= 0 are filtered out in stg_order_items.
+        tests: [not_null]
+      - name: unit_price
+        description: Line unit price in dollars.
+        tests: [not_null]

@@ -3,7 +3,11 @@ version: 2
 sources:
   - name: retail
     description: Raw retail data loaded from seed CSVs into the raw schema.
-    database: dev
+    # No database: set here. dbt-duckdb resolves sources in the target
+    # database, so the same definition works for the dev file, the prod
+    # file, and any DBT_DUCKDB_PATH override. (A hardcoded database
+    # broke every non-default file path: the catalog name follows the
+    # file name, so "dev" only exists when the file is dev.duckdb.)
     schema: raw
     tables:
       - name: raw_customers
@@ -14,42 +18,83 @@ sources:
           error_after: { count: 30, period: day }
         columns:
           - name: customer_id
+            description: Unique customer key.
             tests:
               - unique
               - not_null
+          - name: email
+            description: Customer email as loaded; normalised in stg_customers.
+            tests:
+              - not_null
+          - name: region
+            description: Customer region.
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['North', 'South', 'East', 'West', 'Central']
       - name: raw_products
         description: Product catalog as loaded from the source system.
         columns:
           - name: product_id
+            description: Unique product key.
             tests:
               - unique
+              - not_null
+          - name: unit_price_cents
+            description: Unit price in cents; converted to dollars in stg_products.
+            tests:
+              - not_null
+          - name: unit_cost_cents
+            description: Unit cost in cents; converted to dollars in stg_products.
+            tests:
               - not_null
       - name: raw_orders
         description: Order headers as loaded from the source system.
         columns:
           - name: order_id
+            description: Unique order key.
             tests:
               - unique
               - not_null
           - name: customer_id
+            description: Customer who placed the order.
             tests:
+              - not_null
               - relationships:
-                  to: source('retail', 'raw_customers')
-                  field: customer_id
+                  arguments:
+                    to: source('retail', 'raw_customers')
+                    field: customer_id
+          - name: channel
+            description: Order channel.
+            tests:
+              - accepted_values:
+                  arguments:
+                    values: ['web', 'mobile', 'phone']
       - name: raw_order_items
         description: Order line items as loaded from the source system.
         columns:
           - name: order_item_id
+            description: Unique line-item key.
             tests:
               - unique
               - not_null
           - name: order_id
+            description: Order the line belongs to.
             tests:
+              - not_null
               - relationships:
-                  to: source('retail', 'raw_orders')
-                  field: order_id
+                  arguments:
+                    to: source('retail', 'raw_orders')
+                    field: order_id
           - name: product_id
+            description: Product on the line.
             tests:
+              - not_null
               - relationships:
-                  to: source('retail', 'raw_products')
-                  field: product_id
+                  arguments:
+                    to: source('retail', 'raw_products')
+                    field: product_id
+          - name: quantity
+            description: Units on the line.
+            tests:
+              - not_null

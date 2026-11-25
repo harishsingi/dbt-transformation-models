@@ -6,29 +6,74 @@ models:
     columns:
       - name: customer_id
         tests: [unique, not_null]
+      - name: lifetime_revenue
+        description: Sum of net revenue over fulfilled orders only.
+        tests: [not_null]
+      - name: order_count
+        tests: [not_null]
+      - name: fulfilled_order_count
+        tests: [not_null]
       - name: value_tier
+        description: "{{ doc('value_tier') }}"
         tests:
           - accepted_values:
-              values: ['high_value', 'mid_value', 'low_value', 'never_ordered']
+              arguments:
+                values: ['high_value', 'mid_value', 'low_value', 'never_ordered']
   - name: dim_products
     description: Product dimension with unit margin.
     columns:
       - name: product_id
         tests: [unique, not_null]
+      - name: unit_price
+        tests: [not_null]
+      - name: unit_cost
+        tests: [not_null]
+      - name: unit_margin
+        description: Unit price minus unit cost; never negative on clean data.
+        tests: [not_null]
+      - name: unit_margin_pct
+        description: "{{ doc('gross_margin_pct') }}"
   - name: fct_orders
-    description: One row per fulfilled order (completed or shipped only); cancelled and refunded orders are excluded.
+    description: "{{ doc('fulfilled_order') }} One row per fulfilled order; cancelled and refunded orders are excluded."
     columns:
       - name: order_id
         tests: [unique, not_null]
       - name: customer_id
         tests:
+          - not_null
           - relationships:
-              to: ref('dim_customers')
-              field: customer_id
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['completed', 'shipped']
+      - name: gross_revenue
+        tests: [not_null]
+      - name: total_cost
+        tests: [not_null]
+      - name: gross_profit
+        tests: [not_null]
       - name: net_revenue
+        description: "{{ doc('net_revenue') }}"
+        tests: [not_null]
+      - name: discount_applied
+        description: "{{ doc('discount_applied') }}"
         tests: [not_null]
   - name: mart_daily_revenue
     description: Daily revenue rollup for dashboards.
     columns:
       - name: order_date
         tests: [unique, not_null]
+      - name: orders
+        description: Fulfilled orders on the day.
+        tests: [not_null]
+      - name: net_revenue
+        tests: [not_null]
+      - name: gross_revenue
+        tests: [not_null]
+      - name: avg_order_value
+        description: Net revenue divided by orders on the day.
+        tests: [not_null]

@@ -1,7 +1,20 @@
+# Local DuckDB profile. No warehouse, no credentials: the whole project
+# runs against a local .duckdb file.
+#
+# The database file path can be overridden without editing this file:
+#   DBT_DUCKDB_PATH=/path/to/other.duckdb dbt build --profiles-dir .
+# The prod target is the same engine with a separate file, so a local
+# run can never overwrite the dev database by accident.
 retail_analytics:
   target: dev
   outputs:
     dev:
       type: duckdb
-      path: dev.duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'dev.duckdb') }}"
+      schema: main
+      threads: 4
+    prod:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'prod.duckdb') }}"
+      schema: main
       threads: 4

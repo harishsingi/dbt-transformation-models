@@ -1,3 +1,5 @@
+{{ config(materialized='table') }}
+
 select
     order_id,
     customer_id,
@@ -9,7 +11,10 @@ select
     gross_revenue,
     total_cost,
     gross_profit,
+    gross_profit / nullif(gross_revenue, 0) as gross_margin_pct,
     discount_amount,
-    net_revenue
+    discount_applied,
+    net_revenue,
+    unknown_product_lines
 from {{ ref('int_orders_enriched') }}
-where status in ('completed', 'shipped')
+where status in {{ fulfilled_statuses_list() }}

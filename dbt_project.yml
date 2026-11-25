@@ -18,14 +18,28 @@ clean-targets:
   - dbt_packages
   - logs
 
+# Business rules in one place, so no model hardcodes a threshold or a
+# status list. Models read these with var('...'); override on the
+# command line with --vars if a different cut is ever needed.
+vars:
+  # Lifetime-revenue cutoffs (dollars) for dim_customers.value_tier.
+  value_tier_high_threshold: 1000
+  value_tier_mid_threshold: 250
+  # Order statuses that count as fulfilled (revenue-recognised).
+  fulfilled_statuses: ["completed", "shipped"]
+
 models:
   retail_analytics:
+    +tags: ["retail_analytics"]
     staging:
       +materialized: view
+      +tags: ["staging"]
     intermediate:
       +materialized: ephemeral
+      +tags: ["intermediate"]
     marts:
       +materialized: table
+      +tags: ["marts"]
 
 seeds:
   retail_analytics:
