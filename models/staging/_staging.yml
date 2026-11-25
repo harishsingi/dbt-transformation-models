@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: Cleaned customer master, one row per customer.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: email
+        tests: [not_null]
+      - name: region
+        tests:
+          - accepted_values:
+              values: ['North', 'South', 'East', 'West', 'Central']
+  - name: stg_products
+    description: Cleaned product catalog, one row per product, prices in dollars.
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+      - name: unit_price
+        description: Unit price in dollars; always at or above unit cost (checked by tests/assert_product_pricing.sql).
+      - name: category
+        tests: [not_null]
+  - name: stg_orders
+    description: Cleaned order headers, one row per order.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['completed', 'shipped', 'cancelled', 'refunded']
+  - name: stg_order_items
+    description: Cleaned order line items, one row per line, prices in dollars.
+    columns:
+      - name: order_item_id
+        tests: [unique, not_null]
+      - name: order_id
+        tests:
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+      - name: quantity
+        description: Line quantity; rows with quantity <= 0 are filtered out in stg_order_items.

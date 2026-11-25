@@ -1,0 +1,55 @@
+version: 2
+
+sources:
+  - name: retail
+    description: Raw retail data loaded from seed CSVs into the raw schema.
+    database: dev
+    schema: raw
+    tables:
+      - name: raw_customers
+        description: Customer master data as loaded from the source system.
+        loaded_at_field: updated_at
+        freshness:
+          warn_after: { count: 7, period: day }
+          error_after: { count: 30, period: day }
+        columns:
+          - name: customer_id
+            tests:
+              - unique
+              - not_null
+      - name: raw_products
+        description: Product catalog as loaded from the source system.
+        columns:
+          - name: product_id
+            tests:
+              - unique
+              - not_null
+      - name: raw_orders
+        description: Order headers as loaded from the source system.
+        columns:
+          - name: order_id
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            tests:
+              - relationships:
+                  to: source('retail', 'raw_customers')
+                  field: customer_id
+      - name: raw_order_items
+        description: Order line items as loaded from the source system.
+        columns:
+          - name: order_item_id
+            tests:
+              - unique
+              - not_null
+          - name: order_id
+            tests:
+              - relationships:
+                  to: source('retail', 'raw_orders')
+                  field: order_id
+          - name: product_id
+            tests:
+              - relationships:
+                  to: source('retail', 'raw_products')
+                  field: product_id

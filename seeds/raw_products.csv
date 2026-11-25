@@ -1,0 +1,41 @@
+product_id,product_name,category,subcategory,unit_cost_cents,unit_price_cents,is_active
+1,Wireless Headphones,Electronics,Audio,3499,7999,true
+2,Mechanical Keyboard,Electronics,Accessories,4200,8999,true
+3,4K Monitor 27in,Electronics,Displays,18900,32900,true
+4,Laptop Stand,Electronics,Accessories,1800,3999,true
+5,USB-C Hub,Electronics,Accessories,1200,2999,true
+6,Noise-Cancelling Earbuds,Electronics,Audio,5900,12900,true
+7,Smart Speaker,Electronics,Audio,2400,4999,true
+8,Webcam HD,Electronics,Accessories,2100,5499,true
+9,Ergonomic Chair,Furniture,Seating,14500,29900,true
+10,Standing Desk,Furniture,Desks,19900,44900,true
+11,Desk Lamp,Furniture,Lighting,1500,3499,true
+12,Bookshelf,Furniture,Storage,6800,12900,true
+13,Office Chair Mat,Furniture,Accessories,900,2499,true
+14,Filing Cabinet,Furniture,Storage,5200,11900,true
+15,Running Shoes,Apparel,Footwear,3800,8999,true
+16,Rain Jacket,Apparel,Outerwear,2900,7499,true
+17,Cotton T-Shirt,Apparel,Tops,600,1999,true
+18,Denim Jeans,Apparel,Bottoms,1400,4999,true
+19,Wool Sweater,Apparel,Tops,1800,5999,true
+20,Baseball Cap,Apparel,Accessories,400,1499,true
+21,Yoga Mat,Fitness,Equipment,1100,2999,true
+22,Dumbbell Set 20lb,Fitness,Equipment,4500,9999,true
+23,Resistance Bands,Fitness,Equipment,700,1999,true
+24,Water Bottle 1L,Fitness,Accessories,500,1499,true
+25,Blender,Home,Kitchen,2800,6999,true
+26,Coffee Maker,Home,Kitchen,3400,8999,true
+27,Air Fryer,Home,Kitchen,4100,9999,true
+28,Cookware Set,Home,Kitchen,6900,15900,true
+29,Vacuum Cleaner,Home,Cleaning,8900,19900,true
+30,LED Bulb Pack,Home,Lighting,600,1799,true
+31,Board Game,Toys,Games,1200,3499,true
+32,Puzzle 1000pc,Toys,Games,500,1499,true
+33,Building Blocks Set,Toys,Construction,1600,4999,true
+34,Remote Control Car,Toys,Vehicles,2200,5999,true
+35,Notebook A5,Office,Stationery,200,799,true
+36,Pen Set,Office,Stationery,300,999,true
+37,Desk Organizer,Office,Storage,800,2499,true
+38,Backpack,Office,Bags,1900,5499,true
+39,Laptop Sleeve,Office,Bags,900,2999,true
+40,Wireless Mouse,Electronics,Accessories,900,2499,true

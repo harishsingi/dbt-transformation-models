@@ -1,0 +1,2 @@
+# dbt + DuckDB adapter. Runs the whole project locally with no warehouse.
+dbt-duckdb>=1.9,<2.0

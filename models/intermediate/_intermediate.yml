@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: int_orders_enriched
+    description: One row per order with line-level revenue, cost, and profit rolled up.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: net_revenue
+        description: Gross revenue minus the order discount.
+  - name: int_customer_order_history
+    description: One row per customer with order counts and lifetime revenue.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]

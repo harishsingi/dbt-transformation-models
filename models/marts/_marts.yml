@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: Customer dimension with lifetime value and value tier.
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: value_tier
+        tests:
+          - accepted_values:
+              values: ['high_value', 'mid_value', 'low_value', 'never_ordered']
+  - name: dim_products
+    description: Product dimension with unit margin.
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+  - name: fct_orders
+    description: One row per fulfilled order (completed or shipped only); cancelled and refunded orders are excluded.
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: net_revenue
+        tests: [not_null]
+  - name: mart_daily_revenue
+    description: Daily revenue rollup for dashboards.
+    columns:
+      - name: order_date
+        tests: [unique, not_null]
